@@ -63,7 +63,7 @@
 
 // #define GRADIENT_TIME 1800 // 渐变时，从当前颜色切换到下一个颜色的时间（单位：ms）
 #define GRADIENT_TIME 1800
-// #define GRADIENT_TIME 36000 // 渐变时会变得很慢，而且无法对开关变化做出及时响应
+// #define GRADIENT_TIME 36000 // 渐变时会变得很慢，而且无法对开关变化及时做出响应
 // #define WEIGHT_VAL 10000   // 权值，必须要大于上面的这个时间值，并且最高位为1，其余位是0
 #define WEIGHT_VAL 100 //
 

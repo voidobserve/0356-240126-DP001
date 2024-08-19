@@ -446,12 +446,12 @@ void __color_gradient(u8 *next_color)
                 return;
             }
         }
-        else if (0 == KEY_2_2_PIN && 0 == LIGHT_SENSOR_PIN &&
-                 0 == SWITCH_CHANGE_FLAG)
+        else if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN) &&
+                 (0 == SWITCH_CHANGE_FLAG))
         {
             // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
             delay_ms(10);
-            if (0 == KEY_2_2_PIN && 0 == LIGHT_SENSOR_PIN)
+            if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
             {
                 // 如果打开了感光，且检测到是白天
                 RGB_ENABLE = 0; // 白天灯不亮
@@ -546,7 +546,7 @@ void __color_gradient(u8 *next_color)
     // color_set_component_g(next_g); // 绿色分量
     // color_set_component_b(next_b); // 蓝色分量
 
-    for (i = 0; i < 2000; i++)     // 保持 xx ms
+    for (i = 0; i < 2000; i++) // 保持 xx ms
     {
         if (KEY_2_3_PIN == 0)
         {
@@ -568,10 +568,11 @@ void __color_gradient(u8 *next_color)
                 return;
             }
         }
-        else if (0 == KEY_2_2_PIN && 0 == SWITCH_CHANGE_FLAG)
+        else if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN) &&
+                 (0 == SWITCH_CHANGE_FLAG))
         {
             delay_ms(10);
-            if (0 == KEY_2_2_PIN && 0 == LIGHT_SENSOR_PIN)
+            if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
             {
                 // 如果打开了感光，且检测到是白天
                 RGB_ENABLE = 0; // 白天灯不亮
@@ -696,8 +697,8 @@ void __color_breathing(u8 *next_color)
                 return;
             }
         }
-        else if (0 == KEY_2_2_PIN && 0 == LIGHT_SENSOR_PIN &&
-                 0 == SWITCH_CHANGE_FLAG)
+        else if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN) &&
+                 (0 == SWITCH_CHANGE_FLAG))
         {
             // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
             delay_ms(10);
@@ -753,13 +754,30 @@ void __color_breathing(u8 *next_color)
         if (KEY_2_3_PIN == 0)
         {
             delay_ms(10);
+
+            // 这里不用检测锁色，因为此时已经接近最大亮度
+
             if (KEY_2_3_PIN == 0)
             {
                 right_key_val = RIGHT_KEY_UP;
                 // 如果关闭了电源
                 return;
             }
+            else if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN) &&
+                     (0 == SWITCH_CHANGE_FLAG))
+            {
+                // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
+                delay_ms(10);
+                if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+                {
+                    // 如果打开了感光，且检测到是白天
+                    RGB_ENABLE = 0; // 白天灯不亮
+                    SWITCH_CHANGE_FLAG = 1;
+                    return;
+                }
+            }
         }
+
         delay_ms(1);
     }
     // P22D = 0;
@@ -819,6 +837,19 @@ void __color_breathing(u8 *next_color)
             {
                 left_key_val = LEFT_EY_UP;
                 // 如果开启了锁色
+                return;
+            }
+        }
+        else if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN) &&
+                 (0 == SWITCH_CHANGE_FLAG))
+        {
+            // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
+            delay_ms(10);
+            if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+            {
+                // 如果打开了感光，且检测到是白天
+                RGB_ENABLE = 0; // 白天灯不亮
+                SWITCH_CHANGE_FLAG = 1;
                 return;
             }
         }
@@ -886,6 +917,29 @@ void __color_breathing(u8 *next_color)
             {
                 right_key_val = RIGHT_KEY_UP;
                 // 如果关闭了电源
+                return;
+            }
+        }
+        else if (0 == KEY_1_1_PIN)
+        {
+            delay_ms(10);
+            if (0 == KEY_1_1_PIN)
+            {
+                left_key_val = LEFT_EY_UP;
+                // 如果开启了锁色
+                return;
+            }
+        }
+        else if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN) &&
+                 (0 == SWITCH_CHANGE_FLAG))
+        {
+            // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
+            delay_ms(10);
+            if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+            {
+                // 如果打开了感光，且检测到是白天
+                RGB_ENABLE = 0; // 白天灯不亮
+                SWITCH_CHANGE_FLAG = 1;
                 return;
             }
         }
@@ -965,12 +1019,12 @@ void main(void)
     while (1)
     {
 
-#if 0 // 测试单个颜色时使用
-      // color[0] = color_buf[0][0];
-      // color[1] = color_buf[0][1];
-      // color[2] = color_buf[0][2];
-      // color_show(color); // 调用该函数会直接更新当前显示的颜色的分量
-      // delay_ms(1000);
+#if 0  // 测试单个颜色时使用
+       // color[0] = color_buf[0][0];
+       // color[1] = color_buf[0][1];
+       // color[2] = color_buf[0][2];
+       // color_show(color); // 调用该函数会直接更新当前显示的颜色的分量
+       // delay_ms(1000);
 #endif // 测试单个颜色时使用
 
 #if 1
