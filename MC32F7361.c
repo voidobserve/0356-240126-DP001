@@ -65,6 +65,22 @@ void delay_ms(u32 xms)
     }
 }
 
+// 不能在这个项目随意修改FCPU的频率，否则灯光的颜色需要重新调试
+// // 毫秒级延时
+// // 前提条件：FCPU = FHOSC / 2
+// void delay_ms(u32 xms)
+// {
+//     while (xms)
+//     {
+//         u16 i = 1150;
+//         while (i--)
+//         {
+//             Nop();
+//         }
+//         xms--;
+//     }
+// }
+
 /************************************************
 ;  *    @函数名          : CLR_RAM
 ;  *    @说明            : 清RAM
@@ -159,6 +175,7 @@ void IO_Init(void)
 // }
 
 // 开关状态扫描
+// 每次调用至少要20ms
 void key_scan(void)
 {
     // 扫描左侧开关
@@ -235,11 +252,14 @@ void timer0_pwm_config(void)
     // T0CNT = 255;
     // T0LOAD = 255; //
 
-    T0DATA = 255;           // 占空比，占空比 == DATA / LOAD * 100%
+    // T0DATA = 255; // 占空比，占空比 == DATA / LOAD * 100%
+    T0DATA = 0;
+
     PWMCR0 &= ~(0x01 << 4); // PWM0输出正向波形
     PWMCR1 &= ~(0x01 << 0); // PWM0工作于普通模式
     PWMCR3 &= ~(0x01 << 2); // PWM0 输出通道为 PWM0 O0（P16）
     T0EN = 1;
+    // T0EN = 0;
 }
 
 // pwm1--负责控制G，绿色（默认占空比为100）
@@ -257,9 +277,12 @@ void timer1_pwm_config(void)
     // T1CNT = 255;
     // T1LOAD = 255;
 
-    T1DATA = 255;           // 占空比，占空比 == DATA / LOAD * 100%
+    // T1DATA = 255;           // 占空比，占空比 == DATA / LOAD * 100%
+    T1DATA = 0;
+
     PWMCR1 &= ~(0x01 << 1); // PWM1工作于普通模式
-    T1EN = 1;
+                            T1EN = 1;
+    // T1EN = 0;
 }
 
 // pwm2--负责控制R，红色（默认占空比为100）
@@ -277,10 +300,13 @@ void timer2_pwm_config(void)
     // T2CNT = 255;   // T2计数器
     // T2LOAD = 255;  // T2重载寄存器
 
-    T2DATA = 255; // T2 比较寄存器，用于设置 PWM2 的占空比
+    // T2DATA = 255; // T2 比较寄存器，用于设置 PWM2 的占空比
+    T2DATA = 0;
+
     // PWMCR0 &= ~(0x01 << 6); // PWM2端口输出正向波形（可以不写，在寄存器中默认就是0）
     // PWMCR1 &= ~(0x01 << 2); // PWM2 工作于普通模式（可以不写，在寄存器中默认就是0）
     T2EN = 1; // 开启定时器T2
+    // T2EN = 0; 
 }
 
 #endif // 验证通过的代码
@@ -577,6 +603,16 @@ void __color_gradient(u8 *next_color)
                 // 如果打开了感光，且检测到是白天
                 RGB_ENABLE = 0; // 白天灯不亮
                 SWITCH_CHANGE_FLAG = 1;
+                return;
+            }
+        }
+        // 如果切换到了呼吸模式
+        else if (0 == KEY_1_3_PIN)
+        {
+            delay_ms(10);
+            if (0 == KEY_1_3_PIN)
+            {
+                left_key_val = KEY_1_3_PIN;
                 return;
             }
         }
@@ -970,6 +1006,11 @@ void mode_breathing(void)
 void Sys_Init(void)
 {
     GIE = 0;
+
+    // T0DATA = 0;
+    // T1DATA = 0;
+    // T2DATA = 0;
+
     CLR_RAM();
     IO_Init(); // 在其中已经配置了开关、光敏器件
 
@@ -1018,7 +1059,6 @@ void main(void)
 
     while (1)
     {
-
 #if 0  // 测试单个颜色时使用
        // color[0] = color_buf[0][0];
        // color[1] = color_buf[0][1];
@@ -1028,7 +1068,7 @@ void main(void)
 #endif // 测试单个颜色时使用
 
 #if 1
-        key_scan(); // 扫描开关状态
+        key_scan(); // 扫描开关状态 (每次调用至少20ms)
 
         // 先检测电源是否打开
         if (RIGHT_KEY_UP == right_key_val)
@@ -1039,6 +1079,7 @@ void main(void)
             color[2] = 0x00;
             color_show(color); // 黑色
             cur_color_index = 0;
+            cur_mode_status = MODE_CLOSE;
 
             while (RIGHT_KEY_UP == right_key_val) // 等待电源打开，再做其他动作
             {
@@ -1083,12 +1124,32 @@ void main(void)
             if (LEFT_KEY_MID == left_key_val && 0 == LOCK_FLAG)
             {
                 // 渐变模式
+                // 如果是从关灯切换到渐变模式
+                if (MODE_CLOSE == cur_mode_status)
+                {
+                }
+                // 如果是从其他模式切换到渐变模式
+                else
+                {
+                    // 应该从当前的颜色和亮度开始向下一个颜色渐变
+                }
                 mode_gradient();
+                cur_mode_status = MODE_GRADIENT;
             }
             else if (LEFT_KEY_BOTTOM == left_key_val && 0 == LOCK_FLAG)
             {
                 // 呼吸模式
+                // 如果是从关灯切换到呼吸模式
+                if (MODE_CLOSE == cur_mode_status)
+                {
+                }
+                // 如果是从其他模式切换到呼吸模式
+                else
+                {
+                    // 应该从当前的颜色和亮度开始向下一个颜色变化
+                }
                 mode_breathing();
+                cur_mode_status = MODE_BREATHING;
             }
             else if (1 == LOCK_FLAG)
             {
@@ -1104,6 +1165,7 @@ void main(void)
                 color[1] = color_buf[cur_color_index][1];
                 color[2] = color_buf[cur_color_index][2];
                 color_show(color); // 调用该函数会直接更新当前显示的颜色的分量
+                cur_mode_status = MODE_LOCK;
 
                 while (LEFT_EY_UP == left_key_val && RIGHT_KEY_UP != right_key_val)
                 {

@@ -70,6 +70,7 @@
 #define BREATHING_LIGHT_ON_TIME 850  // 呼吸模式下，灯光渐渐变亮的时间（ms）
 #define BREATHING_LIGHT_OFF_TIME 450 // 呼吸模式下，灯光渐渐熄灭的时间（ms）
 
+// 下面这个颜色缓冲区，仅限于FCPU = FHOSC / 4 和 定时器时钟不分频的情况下使用
 const u8 color_buf[][3] = {
 
 #if 0 // 客户删掉的，显示效果不好的颜色
@@ -197,6 +198,16 @@ volatile u16 tmp_b;
 u16 time_interval_r;
 u16 time_interval_g;
 u16 time_interval_b; // 调整PWM的时间间隔
+
+// 定义当前灯光的模式
+enum
+{
+    MODE_CLOSE = 0, // 关闭
+    MODE_BREATHING, // 呼吸
+    MODE_GRADIENT, // 渐变
+    MODE_LOCK, // 锁色
+};
+volatile u8 cur_mode_status; // 记录当前执行的模式
 
 //===============Global Function===============
 void Sys_Init(void);
