@@ -160,6 +160,7 @@ const u8 color_buf[][3] = {
 #define COLOR_NUMS 10
 
 u16 i; // 循环计数值
+u8 j; // 循环计数值，用来控制每ms扫描引脚的电平，来判断按键是否按下
 
 //===============Field Protection Variables===============
 u8 abuf;
@@ -178,6 +179,8 @@ enum
 };
 volatile u8 left_key_val;  // 左侧开关状态
 volatile u8 right_key_val; // 右侧开关状态
+volatile u8 is_key_press_cnt; // 按键是否按下的计数值，在循环中使用，每次扫描到就加一，最后判断这个计数值来进一步判断开关是否切换
+
 
 volatile u8 cur_r; // 当前显示的红色分量的值
 volatile u8 cur_g; // 当前显示的绿色分量的值

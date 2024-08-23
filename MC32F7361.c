@@ -281,7 +281,7 @@ void timer1_pwm_config(void)
     T1DATA = 0;
 
     PWMCR1 &= ~(0x01 << 1); // PWM1工作于普通模式
-                            T1EN = 1;
+    T1EN = 1;
     // T1EN = 0;
 }
 
@@ -306,7 +306,7 @@ void timer2_pwm_config(void)
     // PWMCR0 &= ~(0x01 << 6); // PWM2端口输出正向波形（可以不写，在寄存器中默认就是0）
     // PWMCR1 &= ~(0x01 << 2); // PWM2 工作于普通模式（可以不写，在寄存器中默认就是0）
     T2EN = 1; // 开启定时器T2
-    // T2EN = 0; 
+    // T2EN = 0;
 }
 
 #endif // 验证通过的代码
@@ -716,18 +716,51 @@ void __color_breathing(u8 *next_color)
         if (KEY_2_3_PIN == 0)
         {
             // 如果关闭了电源
-            delay_ms(10);
-            if (KEY_2_3_PIN == 0)
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
             {
+                if (KEY_2_3_PIN == 0)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if (KEY_2_3_PIN == 0)
+            if (is_key_press_cnt >= 10)
+            {
+                // 如果
+                is_key_press_cnt = 0;
                 right_key_val = RIGHT_KEY_UP;
                 return;
             }
         }
         else if (0 == KEY_1_1_PIN)
         {
-            delay_ms(10);
-            if (0 == KEY_1_1_PIN)
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
             {
+                if (0 == KEY_1_1_PIN)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if (0 == KEY_1_1_PIN)
+            if (is_key_press_cnt >= 10)
+            {
+                is_key_press_cnt = 0;
                 left_key_val = LEFT_EY_UP;
                 // 如果开启了锁色
                 return;
@@ -737,10 +770,26 @@ void __color_breathing(u8 *next_color)
                  (0 == SWITCH_CHANGE_FLAG))
         {
             // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
-            delay_ms(10);
-            if (0 == KEY_2_2_PIN && 0 == LIGHT_SENSOR_PIN)
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
+            {
+                if (0 == KEY_2_2_PIN && 0 == LIGHT_SENSOR_PIN)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if (0 == KEY_2_2_PIN && 0 == LIGHT_SENSOR_PIN)
+            if (is_key_press_cnt >= 10)
             {
                 // 如果打开了感光，且检测到是白天
+                is_key_press_cnt = 0;
                 RGB_ENABLE = 0; // 白天灯不亮
                 SWITCH_CHANGE_FLAG = 1;
                 return;
@@ -789,12 +838,26 @@ void __color_breathing(u8 *next_color)
     {
         if (KEY_2_3_PIN == 0)
         {
-            delay_ms(10);
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
+            {
+                if (KEY_2_3_PIN == 0)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
 
             // 这里不用检测锁色，因为此时已经接近最大亮度
-
-            if (KEY_2_3_PIN == 0)
+            // if (KEY_2_3_PIN == 0)
+            if (is_key_press_cnt >= 10)
             {
+                is_key_press_cnt = 0;
                 right_key_val = RIGHT_KEY_UP;
                 // 如果关闭了电源
                 return;
@@ -803,10 +866,26 @@ void __color_breathing(u8 *next_color)
                      (0 == SWITCH_CHANGE_FLAG))
             {
                 // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
-                delay_ms(10);
-                if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+                // delay_ms(10);
+                for (j = 0; j < 10; j++)
+                {
+                    if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+                    {
+                        is_key_press_cnt++;
+                    }
+                    else
+                    {
+                        is_key_press_cnt = 0;
+                        break;
+                    }
+                    delay_ms(1);
+                }
+
+                // if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+                if (is_key_press_cnt >= 10)
                 {
                     // 如果打开了感光，且检测到是白天
+                    is_key_press_cnt = 0;
                     RGB_ENABLE = 0; // 白天灯不亮
                     SWITCH_CHANGE_FLAG = 1;
                     return;
@@ -858,9 +937,25 @@ void __color_breathing(u8 *next_color)
     {
         if (KEY_2_3_PIN == 0) // 在450ms渐灭的时间内，顺便检测是否关闭了电源
         {
-            delay_ms(10);
-            if (KEY_2_3_PIN == 0)
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
             {
+                if (KEY_2_3_PIN == 0)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if (KEY_2_3_PIN == 0)
+            if (is_key_press_cnt >= 10)
+            {
+                is_key_press_cnt = 0;
                 right_key_val = RIGHT_KEY_UP;
                 // 如果关闭了电源
                 return;
@@ -868,9 +963,25 @@ void __color_breathing(u8 *next_color)
         }
         else if (0 == KEY_1_1_PIN)
         {
-            delay_ms(10);
-            if (0 == KEY_1_1_PIN)
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
             {
+                if (0 == KEY_1_1_PIN)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if (0 == KEY_1_1_PIN)
+            if (is_key_press_cnt >= 10)
+            {
+                is_key_press_cnt = 0;
                 left_key_val = LEFT_EY_UP;
                 // 如果开启了锁色
                 return;
@@ -880,10 +991,26 @@ void __color_breathing(u8 *next_color)
                  (0 == SWITCH_CHANGE_FLAG))
         {
             // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
-            delay_ms(10);
-            if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
+            {
+                if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+            if (is_key_press_cnt >= 10)
             {
                 // 如果打开了感光，且检测到是白天
+                is_key_press_cnt = 0;
                 RGB_ENABLE = 0; // 白天灯不亮
                 SWITCH_CHANGE_FLAG = 1;
                 return;
@@ -948,9 +1075,25 @@ void __color_breathing(u8 *next_color)
     {
         if (KEY_2_3_PIN == 0)
         {
-            delay_ms(10);
-            if (KEY_2_3_PIN == 0)
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
             {
+                if (KEY_2_3_PIN == 0)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if (KEY_2_3_PIN == 0)
+            if (is_key_press_cnt >= 10)
+            {
+                is_key_press_cnt = 0;
                 right_key_val = RIGHT_KEY_UP;
                 // 如果关闭了电源
                 return;
@@ -958,9 +1101,25 @@ void __color_breathing(u8 *next_color)
         }
         else if (0 == KEY_1_1_PIN)
         {
-            delay_ms(10);
-            if (0 == KEY_1_1_PIN)
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
             {
+                if (0 == KEY_1_1_PIN)
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if (0 == KEY_1_1_PIN)
+            if (is_key_press_cnt >= 10)
+            {
+                is_key_press_cnt = 0;
                 left_key_val = LEFT_EY_UP;
                 // 如果开启了锁色
                 return;
@@ -970,9 +1129,25 @@ void __color_breathing(u8 *next_color)
                  (0 == SWITCH_CHANGE_FLAG))
         {
             // 打开感光，并且检测到是白天，才会进入，防止影响调整时间
-            delay_ms(10);
-            if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+            // delay_ms(10);
+            for (j = 0; j < 10; j++)
             {
+                if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+                {
+                    is_key_press_cnt++;
+                }
+                else
+                {
+                    is_key_press_cnt = 0;
+                    break;
+                }
+                delay_ms(1);
+            }
+
+            // if ((0 == KEY_2_2_PIN) && (0 == LIGHT_SENSOR_PIN))
+            if (is_key_press_cnt >= 10)
+            {
+                is_key_press_cnt = 0;
                 // 如果打开了感光，且检测到是白天
                 RGB_ENABLE = 0; // 白天灯不亮
                 SWITCH_CHANGE_FLAG = 1;
